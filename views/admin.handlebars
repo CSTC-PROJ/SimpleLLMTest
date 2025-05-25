@@ -1,0 +1,123 @@
+<div class="card card-compact bg-base-100 w-full shadow-xl mt-5">
+  <div class="card-body">
+    <h2 class="card-title">Add A New Guardrail</h2>
+
+    <div class="flex space-x-4">
+        <input type="text" id="message-box" placeholder="Type here" class="input input-bordered w-full max-w-lg" />
+        <button id="add-button" class="btn btn-neutral">Add GR</button>
+        <button id="test-button" class="btn btn-neutral">Test GR</button>
+        <button id="del-button" class="btn btn-neutral">Delete GR</button>
+        <button id="purge-button" class="btn btn-neutral">Delete All</button>
+    </div>
+  </div>
+</div>
+
+<div class="card card-compact bg-base-100 w-full shadow-xl mt-5">
+    
+        <div class="card-body" id="guardrail-results">
+            <h2 class="card-title">Current Guardrails</h2>
+            <p id="grList"></p>
+        </div>
+    </div>
+
+<script>
+    const API_BASE_URL = "http://192.168.4.221:8080";
+
+    async function updateGuardrailList() {
+        const response = await fetch(`${API_BASE_URL}/show-all`);
+        const data = await response.json();
+
+        const guardrailBox = document.querySelector("#grList");
+        guardrailBox.innerHTML = "";
+
+        if (data.stored_values && data.stored_values.length > 0) {
+            guardrailBox.innerHTML = data.stored_values.map(gr => `<p>${gr}</p>`).join("");
+        } else {
+            guardrailBox.innerHTML = `<p class="text-gray-500">No guardrails stored.</p>`;
+        }
+    }
+
+    async function addGuardrail() {
+        const userText = document.querySelector("#message-box").value;
+
+        if (!userText.trim()) {
+            alert("Please enter text to add a guardrail.");
+            return;
+        }
+
+        await fetch(`${API_BASE_URL}/add-embedding`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: userText })
+        });
+
+        updateGuardrailList();
+    }
+
+    async function testGR() {
+        const userText = document.querySelector("#message-box").value;
+
+        if (!userText.trim()) {
+            alert("Please enter text to test against guardrails.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/query-embedding`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: userText })
+            });
+
+            const data = await response.json();
+
+            const alertMessage = `🔍 Guardrail Check:
+            - Matched Text: ${data.matched_text}
+            - Query: ${data.query}
+            - Similarity Score: ${data.similarity_score}`;
+
+            alert(alertMessage);
+            updateGuardrailList();
+        } catch (error) {
+            alert("Error processing guardrail check.");
+            console.error("Fetch error:", error);
+        }
+    }
+
+    async function deleteGuardrail() {
+        const userText = document.querySelector("#message-box").value;
+
+        if (!userText.trim()) {
+            alert("Please enter text to delete.");
+            return;
+        }
+
+        try {
+            await fetch(`${API_BASE_URL}/delete-text`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: userText })
+            });
+
+            alert(`✅ Deleted all instances of '${userText}'`);
+            updateGuardrailList();
+        } catch (error) {
+            alert("Error deleting guardrail.");
+            console.error("Fetch error:", error);
+        }
+    }
+
+    async function purgeGuardrails() {
+        await fetch(`${API_BASE_URL}/delete-all`, { method: "POST" });
+        updateGuardrailList();
+    }
+
+    // ✅ Attach event listeners
+    document.querySelector("#add-button").addEventListener("click", addGuardrail);
+    document.querySelector("#test-button").addEventListener("click", testGR);
+    document.querySelector("#del-button").addEventListener("click", deleteGuardrail); // ✅ New delete function
+    document.querySelector("#purge-button").addEventListener("click", purgeGuardrails);
+
+    // ✅ Show all guardrails on page load
+    document.addEventListener("DOMContentLoaded", updateGuardrailList);
+</script>

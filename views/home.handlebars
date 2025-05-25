@@ -1,0 +1,79 @@
+<div class="card card-compact bg-base-100 w-full shadow-xl mt-5">
+  <div class="card-body">
+    <h2 class="card-title">What would you like to ask?</h2>
+
+    <div class="flex space-x-4">
+        <input type="file" id="file-input" class="file-input w-full max-w-xs" />
+        <input type="text" id="message-box" placeholder="Type here" class="input input-bordered w-full max-w-lg" />
+        <button id="go-button" class="btn btn-neutral">Go</button>
+    </div>
+  </div>
+</div>
+
+<div class="flex space-x-4 mt-5">
+    <div class="card card-compact bg-base-100 w-1/2 shadow-xl">
+        <div class="card-body" id="guardrail-results">
+            <h2 class="card-title">Guard Rail Results</h2>
+            <p id="grResults"></p> <!-- ✅ Updated to show guardrail results -->
+        </div>
+    </div>
+    <div class="card card-compact bg-base-100 w-1/2 shadow-xl">
+        <div class="card-body" id="chat-output">
+            <h2 class="card-title">Chat Output</h2>
+             <p id="chatOutput"></p> <!-- ✅ Updated to show chat output -->
+        </div>
+    </div>
+</div>
+<script>
+  let controller;
+
+async function sendMessage() {
+    controller = new AbortController();
+    const signal = controller.signal;
+
+    // ✅ Capture user input and file
+    const userMessage = document.querySelector("#message-box").value;
+    const fileInput = document.querySelector("#file-input");
+
+    // ✅ Guardrail results & chat output areas
+    const guardrailBox = document.querySelector("#grResults");
+    const chatOutputBox = document.querySelector("#chatOutput");
+
+    // 🚀 Clear previous content on new search
+    guardrailBox.innerHTML = "";
+    chatOutputBox.innerHTML = "";
+
+    const formData = new FormData();
+    formData.append("prompt", userMessage);
+    if (fileInput.files.length > 0) {
+        formData.append("file", fileInput.files[0]);
+    }
+
+    try {
+        const response = await fetch("/api/generate", {
+            method: "POST",
+            body: formData,
+            signal: signal
+        });
+
+        const data = await response.json();
+
+        // 🚀 Handle guardrail matches (Updated with matched text & score)
+        if (data.warning) {
+            guardrailBox.innerHTML = `
+                                      <strong>Breached:</strong> ${data.warning}<br>
+                                      <strong>Matched Text:</strong> ${data.matched_text}<br>
+                                      <strong>Similarity Score:</strong> ${data.similarity_score}`;
+            return;
+        }
+
+        // ✅ Display chat output
+        chatOutputBox.innerHTML = data.response.replace(/\n/g, "<br>");
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+// ✅ Attach event listener for "Go" button to trigger sendMessage
+document.querySelector("#go-button").addEventListener("click", sendMessage);
+</script>
