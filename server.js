@@ -36,10 +36,8 @@ let storedText = ""; // Store uploaded text for querying
 
 
 
-
-
 const SIMILARITY_TOLERANCE = 0.55;  // 🚀 Global threshold for matches
-const API_BASE_URL = "http://192.168.4.221:8080"
+const API_BASE_URL = "http://localhost:8080"
 
 async function checkGuardrail(text) {
     try {
@@ -98,7 +96,7 @@ app.post("/api/generate", upload.single("file"), async (req, res) => {
 
     try {
         // 🚀 Step 3: Query LLM
-        const llmResponse = await fetch("http://192.168.4.221:11434/api/generate", {
+        const llmResponse = await fetch("http://localhost:11434/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ model: "gemma:2b", prompt: fullQuery, stream: false }) // Streaming disabled for guardrail check

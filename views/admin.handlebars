@@ -1,28 +1,33 @@
 <div class="card card-compact bg-base-100 w-full shadow-xl mt-5">
-  <div class="card-body">
-    <h2 class="card-title">Add A New Guardrail</h2>
+    <div class="card-body">
+        <h2 class="card-title">Add A New Guardrail</h2>
 
-    <div class="flex space-x-4">
-        <input type="text" id="message-box" placeholder="Type here" class="input input-bordered w-full max-w-lg" />
-        <button id="add-button" class="btn btn-neutral">Add GR</button>
-        <button id="test-button" class="btn btn-neutral">Test GR</button>
-        <button id="del-button" class="btn btn-neutral">Delete GR</button>
-        <button id="purge-button" class="btn btn-neutral">Delete All</button>
+        <div class="flex space-x-4">
+            <input type="text" id="message-box" placeholder="Type here" class="input input-bordered w-full max-w-lg" />
+            <button id="add-button" class="btn btn-neutral">Add GR</button>
+            <button id="test-button" class="btn btn-neutral">Test GR</button>
+            <button id="del-button" class="btn btn-neutral">Delete GR</button>
+            <button id="purge-button" class="btn btn-neutral">Delete All</button>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="card card-compact bg-base-100 w-full shadow-xl mt-5">
-    
-        <div class="card-body" id="guardrail-results">
-            <h2 class="card-title">Current Guardrails</h2>
-            <p id="grList"></p>
-        </div>
+
+    <div class="card-body" id="guardrail-results">
+        <h2 class="card-title">Current Guardrails</h2>
+        <p id="grList"></p>
     </div>
+</div>
 
 <script>
-    const API_BASE_URL = "http://192.168.4.221:8080";
+    // **********************************************************************************
+    // This API URL needs changing to match the server IP running the Python application
+    const API_BASE_URL = "http://192.168.161.137:8080";
+    // **********************************************************************************
+    // **********************************************************************************
 
+    // Updates the page to show the current guardrails that have been added to the server
     async function updateGuardrailList() {
         const response = await fetch(`${API_BASE_URL}/show-all`);
         const data = await response.json();
@@ -37,6 +42,7 @@
         }
     }
 
+    // Adds new guardrails to the server.
     async function addGuardrail() {
         const userText = document.querySelector("#message-box").value;
 
@@ -54,6 +60,8 @@
         updateGuardrailList();
     }
 
+    // Tests the input from the admin page against the guardrails.  This is not a simple keyword search 
+    // but the API in the backend compares embedding similarities.
     async function testGR() {
         const userText = document.querySelector("#message-box").value;
 
@@ -84,6 +92,7 @@
         }
     }
 
+    // Deletes a guardrail.  This must match identially.
     async function deleteGuardrail() {
         const userText = document.querySelector("#message-box").value;
 
@@ -107,17 +116,18 @@
         }
     }
 
+    // Deletes all guardrails.
     async function purgeGuardrails() {
         await fetch(`${API_BASE_URL}/delete-all`, { method: "POST" });
         updateGuardrailList();
     }
 
-    // ✅ Attach event listeners
+    //Attaches event listeners to buttons and to the page
     document.querySelector("#add-button").addEventListener("click", addGuardrail);
     document.querySelector("#test-button").addEventListener("click", testGR);
-    document.querySelector("#del-button").addEventListener("click", deleteGuardrail); // ✅ New delete function
+    document.querySelector("#del-button").addEventListener("click", deleteGuardrail);
     document.querySelector("#purge-button").addEventListener("click", purgeGuardrails);
 
-    // ✅ Show all guardrails on page load
+    //Show all guardrails on page load
     document.addEventListener("DOMContentLoaded", updateGuardrailList);
 </script>

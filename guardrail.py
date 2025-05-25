@@ -6,28 +6,30 @@ from flask_cors import CORS  # 🚀 Import CORS
 from sentence_transformers import SentenceTransformer
 
 app = Flask(__name__)
-CORS(app)  # 🚀 Enable Cross-Origin Resource Sharing
+CORS(app)  #Enable Cross-Origin Resource Sharing
 
-# 🚀 Initialize embedding model
+#Initialize embedding model
 model = SentenceTransformer("all-MiniLM-L6-v2")
 d = model.get_sentence_embedding_dimension()  # Get model vector size
 
-# 🚀 Use Cosine Similarity instead of L2 distance
+#Use Cosine Similarity instead of L2 distance - L2 distance was posing issues in similarities leading to a number of
+#false positives.
 index = faiss.IndexFlatIP(d)  # Inner Product = Cosine Similarity
 index_file = "faiss_index.bin"
 stored_texts_file = "stored_texts.npy"
 
-# 🚀 Load saved embeddings if available
+#Load saved embeddings if available
 if os.path.exists(index_file) and os.path.exists(stored_texts_file):
     index = faiss.read_index(index_file)
     stored_texts = np.load(stored_texts_file, allow_pickle=True).tolist()
 else:
     stored_texts = []
 
-# 🚀 Normalize embeddings before storing
+#Normalize embeddings before storing
 def normalize(vec):
     return vec / np.linalg.norm(vec)
 
+#Delete All endpoint
 @app.route("/delete-all", methods=["POST"])
 def delete_all():
     global index, stored_texts
@@ -39,6 +41,7 @@ def delete_all():
         os.remove(stored_texts_file)
     return jsonify({"message": "✅ All embeddings deleted!"})
 
+#Add Embedding of a guardrail passed to it from the front end.
 @app.route("/add-embedding", methods=["POST"])
 def add_embedding():
     data = request.json
@@ -46,17 +49,19 @@ def add_embedding():
 
     if not text:
         return jsonify({"error": "Text is required"}), 400
-
-    embedding = normalize(model.encode(text).astype(np.float32))  # 🚀 Normalize
-    index.add(np.array([embedding]))  # Store embedding
+#Normalize the embedding before storing
+    embedding = normalize(model.encode(text).astype(np.float32))  
+    index.add(np.array([embedding]))  
+    # Store embedding
     stored_texts.append(text)
 
-    # 🚀 Save to disk for persistence
+    #Save to disk for persistence
     faiss.write_index(index, index_file)
     np.save(stored_texts_file, np.array(stored_texts))
 
     return jsonify({"message": f"✅ Added embedding for '{text}'"})
 
+#Query a sent value and return the match results
 @app.route("/query-embedding", methods=["POST"])
 def query_embedding():
     data = request.json
@@ -65,14 +70,11 @@ def query_embedding():
     if not query:
         return jsonify({"error": "Query text is required"}), 400
 
-    query_embedding = normalize(model.encode(query).astype(np.float32))  # 🚀 Normalize
+    query_embedding = normalize(model.encode(query).astype(np.float32))  
     distances, indices = index.search(np.array([query_embedding]), k=1)
 
-    if indices[0][0] == -1 or distances[0][0] < 0.5:  # 🚀 Ignore weak matches
-        return jsonify({"message": "⚠️ No meaningful match found"})
-
-    matched_text = stored_texts[indices[0][0]]
-    similarity_score = float(distances[0][0])
+    matched_text = stored_texts[indices[0][0]] if indices[0][0] != -1 else None
+    similarity_score = float(distances[0][0]) if indices[0][0] != -1 else None
 
     return jsonify({
         "query": query,
@@ -80,6 +82,7 @@ def query_embedding():
         "similarity_score": similarity_score
     })
 
+# Allows deleting singular text embeddings - must be an identical match
 @app.route("/delete-text", methods=["POST"])
 def delete_text():
     data = request.json
@@ -97,24 +100,25 @@ def delete_text():
     # Remove matching texts
     stored_texts = [text for i, text in enumerate(stored_texts) if i not in indices_to_remove]
 
-    # 🚀 Rebuild the index without deleted embeddings
+    #Rebuild the index without deleted embeddings
     index = faiss.IndexFlatIP(d)
     for text in stored_texts:
         embedding = normalize(model.encode(text).astype(np.float32))
         index.add(np.array([embedding]))
 
-    # 🚀 Save updated index
+    #Save updated index
     faiss.write_index(index, index_file)
     np.save(stored_texts_file, np.array(stored_texts))
 
     return jsonify({"message": f"✅ Deleted all instances of '{text_to_delete}'"})
 
+# Show all embeddings
 @app.route("/show-all", methods=["GET"])
 def show_all():
     if not stored_texts:
         return jsonify({"message": "⚠️ No embeddings stored yet!"})
 
     return jsonify({"stored_values": stored_texts})
-
+# Expose on 0.0.0.0 - this is required as it's called from the UI directly
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
