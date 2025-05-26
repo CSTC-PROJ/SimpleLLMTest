@@ -37,6 +37,7 @@ Ollama
 ```
 
 This will present the available commands.
+
 ![image](https://github.com/user-attachments/assets/bbd58f5a-959a-42a9-8246-de9673e15d5d)
 
 
