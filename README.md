@@ -1,15 +1,14 @@
-Locally Hosted LLM – Test
-Author: Christian Davis - CSO
+#Locally Hosted LLM – Test
  
  
-Purpose
+#Purpose
 Having come to the realisation that large language models (LLMs) and AI, including Agentic AI, are unlikely to follow the same path as blockchain—where its potential remains underutilised—I decided to experiment with an LLM to set up a simple query system.  While this approach does not fully leverage the capabilities of LLMs, it has given me valuable insights in to how interactions occur.  
 -	https://emt.gartnerweb.com/ngw/globalassets/en/articles/infographics/hype-cycle-for-artificial-intelligence-2024.jpg
 NOTE THAT THIS SOLUTION LACKS ANY SECURITY MEASURES (E.G. HTTPS AND DATA-AT-REST PROTECTION) – I DO NOT RECOMMEND USING IT AS IS FOR ANYTHING OTHER THAN TESTING
 I TAKE NO CREDIT FOR THE CODING, I’M AN ORCHESTRATOR NOT A DEVELOPER – YOU CAN THANK CO-PILOT FOR THE AWESOME/EQUALLY SLOPPY CODING 😊
 
  
-System Specifications
+#System Specifications
 This solution was performed on a low powered VM with an equally unimpressive CPU with the following specifications: 
 -	CPU: 4 Core Ryzen 6800u (Low Power)
 -	Memory: 8GB (Regularly Maxed Out)
@@ -19,16 +18,20 @@ Software
 -	Ollama
 -	Python3
 -	NodeJS 22.x
-Installation
+
+#Installation
 Ollama
 Ollama can be installed as a single line command, which results in not only LLM runtime being installed, but also the respective systemd service entries are created too meaning it doesn’t require any work to start the service. 
 -	https://ollama.com/
-curl -fsSL https://ollama.com/install.sh | sh 
 
- 
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
 
 Once installed
-Ollama
+```bash
+ollama
+```
 
 This will present the available commands.
  
