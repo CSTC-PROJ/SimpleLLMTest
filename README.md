@@ -2,6 +2,7 @@
  
  
 #Purpose
+
 Having come to the realisation that large language models (LLMs) and AI, including Agentic AI, are unlikely to follow the same path as blockchain—where its potential remains underutilised—I decided to experiment with an LLM to set up a simple query system.  While this approach does not fully leverage the capabilities of LLMs, it has given me valuable insights in to how interactions occur.  
 -	https://emt.gartnerweb.com/ngw/globalassets/en/articles/infographics/hype-cycle-for-artificial-intelligence-2024.jpg
 NOTE THAT THIS SOLUTION LACKS ANY SECURITY MEASURES (E.G. HTTPS AND DATA-AT-REST PROTECTION) – I DO NOT RECOMMEND USING IT AS IS FOR ANYTHING OTHER THAN TESTING
