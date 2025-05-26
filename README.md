@@ -21,6 +21,13 @@ Software
 - Python3
 - NodeJS 22.x
 
+# Overview
+The solution itself allows a user to submit queries to the LLM.  All user inputs are compared against any added guardrails before anything is sent to the LLM, additionally all responses are sent back to the guardrail to check if the LLM response is in breach.
+![image](https://github.com/user-attachments/assets/928e94cd-a33f-4c79-a15e-379f0d9296f2)
+
+
+
+
 # Installation
 ## Ollama - https://ollama.com/
 Ollama can be installed as a single line command, which results in not only LLM runtime being installed, but also the respective systemd service entries are created too meaning it doesn’t require any work to start the service.
