@@ -28,6 +28,7 @@ Ollama can be installed as a single line command, which results in not only LLM 
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ```
+![image](https://github.com/user-attachments/assets/77940629-a474-4013-97f5-d685e7eb5335)
 
 Once installed
 
