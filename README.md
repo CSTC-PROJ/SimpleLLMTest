@@ -37,6 +37,8 @@ Ollama
 ```
 
 This will present the available commands.
+![image](https://github.com/user-attachments/assets/bbd58f5a-959a-42a9-8246-de9673e15d5d)
+
 
 *Notes*
 - Ollama is exposed by default to Localhost – if you wish to call the Ollama API from an external source directly, then you will need to set the environment within the systemd service entry.
@@ -70,6 +72,7 @@ To install the model.
 ```bash
 ollama pull gemma:2b
 ```
+![image](https://github.com/user-attachments/assets/fabee338-3701-47a7-bb46-f6f3eface85b)
 
 
 Test the model installed and is available.
@@ -77,6 +80,7 @@ Test the model installed and is available.
 ```bash
 ollama run gemma:2b
 ```
+![image](https://github.com/user-attachments/assets/4b03e346-1753-441a-8fd5-3b59a2879b8a)
 
 Check the Ollama API server is up
 
@@ -89,6 +93,8 @@ curl -X POST http://localhost:11434/api/generate \
 "stream": false
 }'
 ```
+![image](https://github.com/user-attachments/assets/40497973-49e2-4d4b-95f6-df619279646b)
+
 
 This is the basics of running the LLM locally.
 
@@ -117,6 +123,9 @@ pip install faiss-cpu sentence-transformers numpy flask flask-cors --break-syste
 ```
 
 “break system packages” may not be required, but a number of errors were thrown and it was this or using venv (and I don’t know venv)
+![image](https://github.com/user-attachments/assets/ce63a930-5dbb-4fb7-a2f2-6835d17d51ec)
+![image](https://github.com/user-attachments/assets/295aaf9c-c0c8-4570-8174-8b69521aec0a)
+
 
 Several warnings get thrown.  I don’t know if they have any impact but to resolve this I added the following just to be sure.
 
@@ -161,11 +170,15 @@ To add an embedding…
 ```bash
 curl -X POST http://localhost:8080/add-embedding -H "Content-Type: application/json" -d "{\"text\": \"harmful intent\"}"
 ```
+![image](https://github.com/user-attachments/assets/f588bb23-6322-493f-aa79-43df6e099c82)
+
 
 To show all embeddings currently…
 ```
 curl  http://localhost:8080/show-all
 ```
+![image](https://github.com/user-attachments/assets/a58aebc8-93e2-4edd-be70-17447bb31082)
+
 
 To Query against the embeddings…
 
@@ -173,16 +186,20 @@ To Query against the embeddings…
 curl -X POST http://localhost:8080/query-embedding -H "Content-Type: application/json" -d "{\"query\": \"harm\"}"
 ```
 
+![image](https://github.com/user-attachments/assets/76c18f54-b325-44b9-93f2-8b0622631497)
+
 To delete a single embedding…
 ```bash
 curl -X POST http://localhost:8080/delete-text -H "Content-Type: application/json" -d "{\"text\": \"harmful intent\"}"
 ```
+![image](https://github.com/user-attachments/assets/62de16c5-1a9a-4234-98cb-e5a4010c5a48)
 
 To delete all embeddings…
 
 ```bash
 curl -X POST http://localhost:8080/delete-all
 ```
+![image](https://github.com/user-attachments/assets/db421f26-f2d2-4655-86d8-d9d25e5e168c)
 
 ## Web Application Server
 The Web Application exists purely to facilitate the flow of consumer to guardrail to LLM.  While it’s possible to just interact natively with the Guard Rail and Ollama through a bash script, there’s little fun in that.  The Web Application is a simple NodeJS Express with Handlebars that supports calls to both in an orderly fashion.  Again, this could have been done from a simple HTML page on a Python http server, but I wanted to control access to the LLM to be explicitly after the Guardrail.
@@ -193,6 +210,7 @@ NodeJS application installation from the apt repository is by default very out o
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash –
 sudo apt install -y nodejs
 ```
+![image](https://github.com/user-attachments/assets/b363b3eb-c0ca-47c2-8799-357cbadde215)
 
 In the directory cloned earlier
 
@@ -206,18 +224,29 @@ change the IP address in the ``admin.hanlebars`` to the IP address of the hostin
 node server.js
 ```
 
+
 There are 2 pages that can be accessed.  The home page on the left and admin on the right.
 
 Admin
 - Allows the creation of, removal of, and testing against guardrails.  This is quicker than trying the main chat to match a guardrail
+![image](https://github.com/user-attachments/assets/4b546a0e-c3ca-4080-835a-24da3fbc8b8e)
+
+
 
 The Chat page
 - allows uploading text files for querying
 - basic chats
 - will show any failure against custom guardrails on the left (both input to the LLM and output from) - show chat outputs on the right
+![image](https://github.com/user-attachments/assets/fc477a61-3190-4b10-9dd8-29717732c18b)
+![image](https://github.com/user-attachments/assets/5eb78b0e-cea3-463e-86eb-42b44be2ba23)
+![image](https://github.com/user-attachments/assets/9892f9cd-da2c-471c-9299-8438148a1ac6)
+
 
 **Limitations**
 - no context/memory of a chat – forms a standalone query engine only.  To include past context either this would need to be string built to send the entire history each time or there may be a setting I’ve not stumbled upon yet.
 - No access to internet sources so limited to the model in use
 - If you reference “tell me about the file” then it doesn’t understand it’s received a file as it’s all sent as text.
 - Guardrails are subject to mismatches and so tolerances may need to be adjusted in the code – see the respective variable – set at 0.5 by default.
+
+
+
