@@ -131,6 +131,7 @@ pip install faiss-cpu sentence-transformers numpy flask flask-cors --break-syste
 ```
 
 “break system packages” may not be required, but a number of errors were thrown and it was this or using venv (and I don’t know venv)
+
 ![image](https://github.com/user-attachments/assets/ce63a930-5dbb-4fb7-a2f2-6835d17d51ec)
 ![image](https://github.com/user-attachments/assets/295aaf9c-c0c8-4570-8174-8b69521aec0a)
 
@@ -178,6 +179,7 @@ To add an embedding…
 ```bash
 curl -X POST http://localhost:8080/add-embedding -H "Content-Type: application/json" -d "{\"text\": \"harmful intent\"}"
 ```
+
 ![image](https://github.com/user-attachments/assets/f588bb23-6322-493f-aa79-43df6e099c82)
 
 
@@ -185,6 +187,7 @@ To show all embeddings currently…
 ```
 curl  http://localhost:8080/show-all
 ```
+
 ![image](https://github.com/user-attachments/assets/a58aebc8-93e2-4edd-be70-17447bb31082)
 
 
@@ -200,6 +203,7 @@ To delete a single embedding…
 ```bash
 curl -X POST http://localhost:8080/delete-text -H "Content-Type: application/json" -d "{\"text\": \"harmful intent\"}"
 ```
+
 ![image](https://github.com/user-attachments/assets/62de16c5-1a9a-4234-98cb-e5a4010c5a48)
 
 To delete all embeddings…
@@ -207,17 +211,21 @@ To delete all embeddings…
 ```bash
 curl -X POST http://localhost:8080/delete-all
 ```
+
 ![image](https://github.com/user-attachments/assets/db421f26-f2d2-4655-86d8-d9d25e5e168c)
+
 
 ## Web Application Server
 The Web Application exists purely to facilitate the flow of consumer to guardrail to LLM.  While it’s possible to just interact natively with the Guard Rail and Ollama through a bash script, there’s little fun in that.  The Web Application is a simple NodeJS Express with Handlebars that supports calls to both in an orderly fashion.  Again, this could have been done from a simple HTML page on a Python http server, but I wanted to control access to the LLM to be explicitly after the Guardrail.
 
 **Node JS Installation**
 NodeJS application installation from the apt repository is by default very out of date.  This application will not run on the out of the box version and has been tested on node 20+
+
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash –
 sudo apt install -y nodejs
 ```
+
 ![image](https://github.com/user-attachments/assets/b363b3eb-c0ca-47c2-8799-357cbadde215)
 
 In the directory cloned earlier
@@ -237,6 +245,7 @@ There are 2 pages that can be accessed.  The home page on the left and admin on 
 
 Admin
 - Allows the creation of, removal of, and testing against guardrails.  This is quicker than trying the main chat to match a guardrail
+
 ![image](https://github.com/user-attachments/assets/4b546a0e-c3ca-4080-835a-24da3fbc8b8e)
 
 
@@ -245,6 +254,7 @@ The Chat page
 - allows uploading text files for querying
 - basic chats
 - will show any failure against custom guardrails on the left (both input to the LLM and output from) - show chat outputs on the right
+
 ![image](https://github.com/user-attachments/assets/fc477a61-3190-4b10-9dd8-29717732c18b)
 ![image](https://github.com/user-attachments/assets/5eb78b0e-cea3-463e-86eb-42b44be2ba23)
 ![image](https://github.com/user-attachments/assets/9892f9cd-da2c-471c-9299-8438148a1ac6)
